@@ -4,11 +4,15 @@ project(lab02-cv)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB SOURCES "src/*.cpp")
-file(GLOB HEADERS "include/*.h")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "include/*.h")
 
 add_executable(main ${SOURCES} ${HEADERS})
-target_include_directories(main PRIVATE "include")
+
+target_include_directories(main PRIVATE
+    "include/framework"
+    "include/luma"
+)
 
 find_package(OpenGL REQUIRED)
 
