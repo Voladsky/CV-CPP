@@ -1,25 +1,87 @@
 #include "image_processing.h"
 
-GLuint matToTexture(const cv::Mat &mat) {
-    cv::Mat matRGBA;
-    if (mat.channels() == 1)
-        cv::cvtColor(mat, matRGBA, cv::COLOR_GRAY2RGBA);
-    else if (mat.channels() == 3)
-        cv::cvtColor(mat, matRGBA, cv::COLOR_BGR2RGBA);
-    else if (mat.channels() == 4)
-        matRGBA = mat;
-    else
-        throw std::runtime_error("Unsupported channels");
+namespace Processing
+{
+    cv::Mat GrayWorldCorrection(const cv::Mat &image)
+    {
+        if (image.empty())
+            throw std::invalid_argument("Input image is empty");
+        cv::Mat result;
+        image.convertTo(result, CV_32FC3);
+        cv::Scalar channelMeans = cv::mean(result);
+        float mean = channelMeans.dot(cv::Scalar(1, 1, 1)) / 3.0f;
+        if (channelMeans[0] == 0 || channelMeans[1] == 0 || channelMeans[2] == 0)
+        {
+            return image.clone();
+        }
+        float scaleB = mean / channelMeans[0];
+        float scaleG = mean / channelMeans[1];
+        float scaleR = mean / channelMeans[2];
+        std::vector<cv::Mat> channels;
+        cv::split(result, channels);
+        channels[0] *= scaleB;
+        channels[1] *= scaleG;
+        channels[2] *= scaleR;
+        cv::merge(channels, result);
+        result.convertTo(result, image.type());
+        return result;
+    }
 
-    GLuint tex;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
+    cv::Mat ReferencePixelCorrection(const cv::Mat &image,
+                                     const cv::Scalar &reference_color,
+                                     const cv::Scalar &target_color)
+    {
+        if (image.empty())
+            throw std::invalid_argument("Image was empty");
+        cv::Mat result;
+        image.convertTo(result, CV_32FC3);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        float scaleB = reference_color[0] / target_color[0];
+        float scaleG = reference_color[1] / target_color[1];
+        float scaleR = reference_color[2] / target_color[2];
+        std::vector<cv::Mat> channels;
+        cv::split(result, channels);
+        channels[0] *= scaleB;
+        channels[1] *= scaleG;
+        channels[2] *= scaleR;
+        cv::merge(channels, result);
+        result.convertTo(result, image.type());
+        return result;
+    }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, matRGBA.cols, matRGBA.rows, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, matRGBA.data);
+    cv::Mat LinearStretching(const cv::Mat &image, float minOffset, float maxOffset)
+    {
+        if (image.empty())
+            throw std::invalid_argument("Image was empty");
+        cv::Mat result;
+        image.convertTo(result, CV_32FC3);
 
-    return tex;
+        double minVal, maxVal;
+        cv::minMaxLoc(result, &minVal, &maxVal);
+
+        if (maxVal == minVal)
+        {
+            return image.clone();
+        }
+
+        float scale = (maxOffset - minOffset) / (maxVal - minVal);
+
+        result = (result - minVal) * scale;
+
+        result.convertTo(result, image.type());
+        return result;
+    }
+    cv::Mat GammaCorrection(const cv::Mat &image, float gamma, float gain)
+    {
+        if (image.empty())
+            throw std::invalid_argument("Image was empty");
+        cv::Mat result;
+        image.convertTo(result, CV_32FC3);
+
+        cv::pow(result, gamma, result);
+        result = gain * result;
+
+        result.convertTo(result, image.type());
+        return result;
+    }
 }

@@ -110,6 +110,7 @@ void BaseApplication::SetupImgui()
 
 void BaseApplication::Run()
 {
+    Start();
     while (running_)
     {
         auto frame_start = SDL_GetPerformanceCounter();

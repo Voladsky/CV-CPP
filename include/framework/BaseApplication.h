@@ -12,6 +12,7 @@ public:
     virtual ~BaseApplication() = default;
 
 protected:
+    virtual void Start() = 0;
     virtual void Update(float delta_time) = 0;
     virtual void RenderUI() = 0;
     virtual void ProcessEvent(const SDL_Event &event) = 0;

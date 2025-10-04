@@ -8,7 +8,7 @@ void ImageManager::AddImage(const fs::path &path) {
 }
 
 void ImageManager::AddImage(const std::string& name, const cv::Mat& matrix) {
-    images_.push_back({ name, matrix, matrix });
+    images_.push_back({ name, matrix, matrix, GLTexture(matrix), GLTexture(matrix) });
 }
 
 void ImageManager::AddFolder(const fs::path &path) {
@@ -34,4 +34,26 @@ size_t ImageManager::GetImagesSize() const {
 
 const Image* ImageManager::GetImage(int idx) const {
     return &images_.at(idx);
+}
+
+const int ImageManager::GetSelectedIdx() const {
+    return idx_;
+}
+
+void ImageManager::ProccessCurrent(std::function<cv::Mat(const cv::Mat&)> f) {
+    images_[idx_].processed = f(images_[idx_].original);
+    ReloadImageTexture(idx_);
+}
+
+void ImageManager::ResetCurrent() {
+    images_[idx_].processed = images_[idx_].original.clone();
+    ReloadImageTexture(idx_);
+}
+
+void ImageManager::ReloadImageTexture(int idx) {
+    GLTexture tex1(images_[idx].original);
+    GLTexture tex2(images_[idx].processed);
+
+    images_[idx].orig_texture = std::move(tex1);
+    images_[idx].processed_texture = std::move(tex2);
 }
