@@ -1,5 +1,6 @@
 #include "ImageSelectorUI.h"
 #include <iostream>
+#include <format>
 
 void ImageSelectorUI::Draw()
 {
@@ -9,7 +10,7 @@ void ImageSelectorUI::Draw()
         ImGui::PushID(i);
         const Image *image = manager_.GetImage(i);
         ImGui::BeginGroup();
-        if (ImGui::ImageButton("test",
+        if (ImGui::ImageButton(std::format("#{}", image->name).c_str(),
                                matToTexture(image->original),
                                ImVec2(100, 100)))
         {
