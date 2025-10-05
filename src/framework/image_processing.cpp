@@ -84,4 +84,24 @@ namespace Processing
         result.convertTo(result, image.type());
         return result;
     }
+    cv::Mat HistogramEqualization(const cv::Mat &image)
+    {
+        if (image.empty())
+        {
+            throw std::invalid_argument("Input image is empty");
+        }
+
+        cv::Mat result;
+
+        if (image.channels() != 1)
+        {
+            cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
+        }
+
+        cv::equalizeHist(result, result);
+
+        cv::cvtColor(result, result, cv::COLOR_GRAY2BGR);
+
+        return result;
+    }
 }

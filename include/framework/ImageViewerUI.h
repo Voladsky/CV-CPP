@@ -2,6 +2,7 @@
 #define _IMAGE_VIEWER
 
 #include "ImageManager.h"
+#include "HistogramPlotterUI.h"
 
 class ImageViewerUI
 {

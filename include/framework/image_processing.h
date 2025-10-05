@@ -18,6 +18,7 @@ namespace Processing
                                      const cv::Scalar &target_color);
     cv::Mat LinearStretching(const cv::Mat &image, float minOffset, float maxOffset);
     cv::Mat GammaCorrection(const cv::Mat &image, float gamma, float gain);
+    cv::Mat HistogramEqualization(const cv::Mat &image);
 }
 
 #endif

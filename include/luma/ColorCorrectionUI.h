@@ -1,5 +1,5 @@
-#ifndef _GRAY_WORLD
-#define _GRAY_WORLD
+#ifndef _COLOR_CORRECTION
+#define _COLOR_CORRECTION
 
 #include "ImageManager.h"
 

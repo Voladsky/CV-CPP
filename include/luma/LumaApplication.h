@@ -12,6 +12,7 @@
 #include "ImageSelectorUI.h"
 #include "ImageViewerUI.h"
 #include "ColorCorrectionUI.h"
+#include "HistogramsUI.h"
 
 class LumaApplication : public BaseApplication
 {
@@ -30,6 +31,7 @@ protected:
             selector_.Draw();
             viewer_.Draw();
             color_correction_.Draw();
+            hists_.Draw();
         }
         catch (std::exception &e)
         {
@@ -46,6 +48,7 @@ private:
     ImageSelectorUI selector_{manager_};
     ImageViewerUI viewer_{manager_};
     ColorCorrectionUI color_correction_{manager_};
+    HistogramsUI hists_{manager_};
 };
 
 #endif

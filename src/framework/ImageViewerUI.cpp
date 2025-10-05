@@ -20,4 +20,12 @@ void ImageViewerUI::Draw() {
     ImGui::Image(image->processed_texture.id(), ImVec2(size_, size_));
 
     ImGui::End();
+
+    ImGui::Begin("Histograms");
+
+    HistogramManager hist(*image);
+    HistogramPlotterUI histPlotter{hist};
+    histPlotter.Draw();
+
+    ImGui::End();
 }
