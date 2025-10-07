@@ -13,12 +13,15 @@
 #include "ImageViewerUI.h"
 #include "ColorCorrectionUI.h"
 #include "HistogramsUI.h"
+#include "CurveEditorUI.h"
 
 class LumaApplication : public BaseApplication
 {
 protected:
     void Start() {
         manager_.AddFolder("./images/");
+        // curve_.AddPoint(cv::Point2f(0.3f, 0.7f));
+        // curve_.AddPoint(cv::Point2f(0.7f, 0.3f));
     }
     void Update(float delta_time) override {
     }
@@ -32,6 +35,7 @@ protected:
             viewer_.Draw();
             color_correction_.Draw();
             hists_.Draw();
+            curve_editor_.Draw();
         }
         catch (std::exception &e)
         {
@@ -49,6 +53,8 @@ private:
     ImageViewerUI viewer_{manager_};
     ColorCorrectionUI color_correction_{manager_};
     HistogramsUI hists_{manager_};
+    Curve curve_;
+    CurveEditorUI curve_editor_{curve_, manager_};
 };
 
 #endif

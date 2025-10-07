@@ -88,6 +88,24 @@ void ColorCorrectionUI::Draw()
             manager_.ProccessCurrent(linearStretching);
         }
 
+        if (ImGui::CollapsingHeader("Linear Correction"))
+        {
+            static float alpha = 1.0f;
+            static float beta = 1.0f;
+
+            ImGui::InputFloat("Alpha", &alpha);
+            ImGui::InputFloat("Beta", &beta);
+
+            if (ImGui::Button("Apply linear correction"))
+            {
+                auto linearCorrection = std::bind(Processing::LinearCorrection,
+                                                 std::placeholders::_1,
+                                                 alpha,
+                                                 beta);
+                manager_.ProccessCurrent(linearCorrection);
+            }
+        }
+
         if (ImGui::CollapsingHeader("Gamma Correction"))
         {
             static float gamma = 1.0f;

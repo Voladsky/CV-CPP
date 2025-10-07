@@ -9,6 +9,7 @@ struct ImageHistogram
     std::vector<float> b;
     std::vector<float> g;
     std::vector<float> r;
+    std::vector<float> brightness;
 };
 
 class HistogramManager
@@ -34,16 +35,26 @@ private:
         cv::calcHist(&channels[0], 1, 0, cv::Mat(), b_hist, 1, &hist_size, &hist_range);
         cv::calcHist(&channels[1], 1, 0, cv::Mat(), g_hist, 1, &hist_size, &hist_range);
         cv::calcHist(&channels[2], 1, 0, cv::Mat(), r_hist, 1, &hist_size, &hist_range);
+
+
+        cv::Mat gray;
+        cv::cvtColor(mat, gray, cv::COLOR_BGR2GRAY);
+        cv::Mat brightHist;
+        cv::calcHist(&gray, 1, 0, cv::Mat(), brightHist, 1, &hist_size, &hist_range);
+
         cv::normalize(b_hist, b_hist, 0, 1, cv::NORM_MINMAX);
         cv::normalize(g_hist, g_hist, 0, 1, cv::NORM_MINMAX);
         cv::normalize(r_hist, r_hist, 0, 1, cv::NORM_MINMAX);
+        cv::normalize(brightHist, brightHist, 0, 1, cv::NORM_MINMAX);
         out.b.resize(hist_size);
         out.g.resize(hist_size);
         out.r.resize(hist_size);
+        out.brightness.resize(hist_size);
         for (int i = 0; i < hist_size; i++) {
             out.b[i] = b_hist.at<float>(i, 0);
             out.g[i] = g_hist.at<float>(i, 0);
             out.r[i] = r_hist.at<float>(i, 0);
+            out.brightness[i] = brightHist.at<float>(i, 0);
         }
     }
     ImageHistogram original;

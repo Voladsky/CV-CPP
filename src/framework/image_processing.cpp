@@ -71,15 +71,28 @@ namespace Processing
         result.convertTo(result, image.type());
         return result;
     }
-    cv::Mat GammaCorrection(const cv::Mat &image, float gamma, float gain)
+    cv::Mat LinearCorrection(const cv::Mat &image, float alpha, float beta)
     {
         if (image.empty())
             throw std::invalid_argument("Image was empty");
         cv::Mat result;
         image.convertTo(result, CV_32FC3);
+        result = alpha * result + beta;
+        result = cv::max(0.0, cv::min(255.0, result));
+        result.convertTo(result, image.type());
+        return result;
+    }
+    cv::Mat GammaCorrection(const cv::Mat &image, float gamma, float gain)
+    {
+        if (image.empty())
+            throw std::invalid_argument("Image was empty");
+        cv::Mat result;
+        image.convertTo(result, CV_32FC3, 1.0 / 255.0);
 
         cv::pow(result, gamma, result);
-        result = gain * result;
+        result = gain * result * 255.0;
+
+        result = cv::max(0.0, cv::min(255.0, result));
 
         result.convertTo(result, image.type());
         return result;
