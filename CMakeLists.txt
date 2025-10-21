@@ -4,10 +4,11 @@ project(lab02-cv)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.h")
+file(GLOB_RECURSE SOURCES "src/framework/*.cpp")
+file(GLOB_RECURSE HEADERS "include/framework/*.h")
 
-add_executable(main ${SOURCES} ${HEADERS})
+file(GLOB_RECURSE LUMA_SOURCES "src/luma/*.cpp")
+add_executable(main ${SOURCES} ${HEADERS} ${LUMA_SOURCES})
 
 target_include_directories(main PRIVATE
     "include/framework"
@@ -29,3 +30,11 @@ target_link_libraries(imgui PRIVATE SDL3::SDL3)
 
 
 target_link_libraries(main PRIVATE SDL3::SDL3 OpenGL::GL imgui ${OpenCV_LIBS})
+
+file(GLOB_RECURSE OTSU_SOURCES "src/otsu/*.cpp")
+add_executable(otsu ${SOURCES} ${HEADERS} ${OTSU_SOURCES})
+target_include_directories(otsu PRIVATE
+    "include/framework"
+    "include/otsu"
+)
+target_link_libraries(otsu PRIVATE SDL3::SDL3 OpenGL::GL imgui ${OpenCV_LIBS})

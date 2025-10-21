@@ -20,8 +20,8 @@ public:
         BuilHistogram(image.original, original);
         BuilHistogram(image.processed, processed);
     }
-    const ImageHistogram& GetOriginalHist() const { return original; }
-    const ImageHistogram& GetProcessedHist() const { return processed; }
+    const ImageHistogram &GetOriginalHist() const { return original; }
+    const ImageHistogram &GetProcessedHist() const { return processed; }
 
 private:
     void BuilHistogram(cv::Mat mat, ImageHistogram &out)
@@ -31,11 +31,24 @@ private:
         const float *hist_range = {range};
         std::vector<cv::Mat> channels;
         cv::split(mat, channels);
+
+        if (channels.size() == 1)
+        {
+            cv::Mat brightHist;
+            cv::calcHist(&channels[0], 1, 0, cv::Mat(), brightHist, 1, &hist_size, &hist_range);
+            cv::normalize(brightHist, brightHist, 0, 1, cv::NORM_MINMAX);
+            out.brightness.resize(hist_size);
+            for (int i = 0; i < hist_size; i++)
+            {
+                out.brightness[i] = brightHist.at<float>(i, 0);
+            }
+            return;
+        }
+
         cv::Mat b_hist, g_hist, r_hist;
         cv::calcHist(&channels[0], 1, 0, cv::Mat(), b_hist, 1, &hist_size, &hist_range);
         cv::calcHist(&channels[1], 1, 0, cv::Mat(), g_hist, 1, &hist_size, &hist_range);
         cv::calcHist(&channels[2], 1, 0, cv::Mat(), r_hist, 1, &hist_size, &hist_range);
-
 
         cv::Mat gray;
         cv::cvtColor(mat, gray, cv::COLOR_BGR2GRAY);
@@ -50,7 +63,8 @@ private:
         out.g.resize(hist_size);
         out.r.resize(hist_size);
         out.brightness.resize(hist_size);
-        for (int i = 0; i < hist_size; i++) {
+        for (int i = 0; i < hist_size; i++)
+        {
             out.b[i] = b_hist.at<float>(i, 0);
             out.g[i] = g_hist.at<float>(i, 0);
             out.r[i] = r_hist.at<float>(i, 0);
